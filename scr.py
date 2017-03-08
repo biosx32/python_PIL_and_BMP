@@ -55,8 +55,8 @@ main(arg)
 
 if 0:
 	from time import sleep
-	for i in range(256):
-		a=str(bin(i)) \
+	for img_i in range(256):
+		a=str(bin(img_i)) \
 			.replace("0b", "") \
 			.zfill(8)
 		print(a)
