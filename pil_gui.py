@@ -14,7 +14,6 @@ imgcnt = 0
 oldpath = ""
 
 
-
 class imgpack():
     def __init__(self, x, y, path):
         self.path = path
@@ -74,7 +73,7 @@ def get_dir_index(path):
         series= startpoint
         dircnt = 0
 
-    print(series)
+    log(series)
 
     if not os.path.isdir(series):
         os.system("mkdir %s" % series)
@@ -109,35 +108,27 @@ gui_xstart_edit = pkg.addLabeledEdit(20, 110, "xstart:", "-3", 7, 1, float)
 gui_xend_edit = pkg.addLabeledEdit(100, 110, "xend:", "1", 7, 1, float)
 gui_ystart_edit = pkg.addLabeledEdit(180, 110, "ystart:", "-1.125", 7, 1, float)
 gui_yend_edit = pkg.addLabeledEdit(260, 110, "yend:", "1.125", 7, 1, float)
-gui_divide_edit = pkg.addLabeledEdit(20, 150, "delic:", "1", 7, 1, float)
+gui_divide_edit = pkg.addLabeledEdit(20, 150, "delic:", "100", 7, 1, float)
 gui_xoff_edit = pkg.addLabeledEdit(100, 150, "xoff:", "0.0", 7, 1, float)
 gui_yoff_edit = pkg.addLabeledEdit(180, 150, "yoff:", "0.0", 7, 1, float)
 gui_iterations_edit = pkg.addLabeledEdit(260, 150, "iter:", "20", 7, 1, int)
-gui_percentage_lbl = pkg.addLabel(20, 230, "...")
-gui_generate_button = pkg.addButton(20, 190, "Generate", lambda: generate_from_gui())
-
-gui2_filename_edit = pkg.addLabeledEdit(20 + 350, 30, "Name:", "E:\\test.bmp", 37, 0)
-gui2_width_edit = pkg.addLabeledEdit(20 + 350, 70, "Width:", "192", 7, 1, int)
-gui2_height_edit = pkg.addLabeledEdit(180 + 350, 70, "Height:", "108", 7, 1, int)
-gui2_width_m_edit = pkg.addLabeledEdit(100 + 350, 70, "WMulti:", "1", 7, 1, float)
-gui2_height_edit_m = pkg.addLabeledEdit(260 + 350, 70, "HMulti:", "1", 7, 1, float)
-gui2_xstart_edit = pkg.addLabeledEdit(20 + 350, 110, "xstart:", "-3", 7, 1, float)
-gui2_xend_edit = pkg.addLabeledEdit(100 + 350, 110, "xend:", "1", 7, 1, float)
-gui2_ystart_edit = pkg.addLabeledEdit(180 + 350, 110, "ystart:", "-1.125", 7, 1, float)
-gui2_yend_edit = pkg.addLabeledEdit(260 + 350, 110, "yend:", "1.125", 7, 1, float)
-gui2_divide_edit = pkg.addLabeledEdit(20 + 350, 150, "delic:", "1", 7, 1, float)
-gui2_xoff_edit = pkg.addLabeledEdit(100 + 350, 150, "xoff:", "0.0", 7, 1, float)
-gui2_yoff_edit = pkg.addLabeledEdit(180 + 350, 150, "yoff:", "0.0", 7, 1, float)
-gui2_iterations_edit = pkg.addLabeledEdit(260 + 350, 150, "iter:", "20", 7, 1, int)
-gui2_percentage_lbl = pkg.addLabel(20 + 350, 230, "...")
-gui2_generate_button = pkg.addButton(20 + 350, 190, "Generate", lambda: print("Not implemented"))
+gui_divide_perc_edit = pkg.addLabeledEdit(20, 190, "delic/(x.x%)", "100", 7, 1, float)
+gui_xoff_perc_edit = pkg.addLabeledEdit(100  , 190, "xoff/(x.x%):", "100", 7, 1, float)
+gui_yoff_perc_edit = pkg.addLabeledEdit(180  , 190, "yoff/x.x%):", "100", 7, 1, float)
+gui_generate_button = pkg.addButton(20 , 250, "Generate", lambda: generate_from_gui())
+gui_percentage_lbl = pkg.addLabel(20 , 280, "...")
 
 
-def generate_mandelbrot(directory="./", width=960, height=540, iterations=15, divider=1,
-                        xoff=0, yoff=0, xstart=-3, xend=1, ystart=-1.125, yend=1.125, perc_lbl=gui_percentage_lbl):
+
+
+
+def generate_mandelbrot(*args):
     global dircnt, imgcnt
     global gui_percentage_lbl
     global pkg
+    (directory, width, height, iterations, divider,
+    xoff, yoff, xstart, xend, ystart, yend, perc_lbl)  = args
+    
     gui_percentage_lbl['text'] = "Awaiting..."
     pkg.wnd.update()
     jmc =  str(directory) + "/img_series_" + str(dircnt) + "/img_" + str(imgcnt) + ".bmp"
@@ -187,10 +178,17 @@ def generate_mandelbrot(directory="./", width=960, height=540, iterations=15, di
     imgref.load(directory)
 
 
-
+def generate(directory="./", width=960, height=540, iterations=15, divider=100,
+                        xoff=0, yoff=0, xstart=-3, xend=1, ystart=-1.125, yend=1.125, perc_lbl=gui_percentage_lbl):
+    generate_mandelbrot(directory, width, height, iterations, divider,
+    xoff, yoff, xstart, xend, ystart, yend, perc_lbl)
 
 def generate_from_gui():
-    divide = gui_divide_edit.value
+    divide = gui_divide_edit.value / 100
+    divide_perc = divide / (gui_divide_perc_edit.value / 100)
+    divide *= divide_perc
+
+
     iterations = gui_iterations_edit.value
     filename = gui_filename_edit.value
     xstart = gui_xstart_edit.value
@@ -198,7 +196,15 @@ def generate_from_gui():
     ystart = gui_ystart_edit.value
     yend = gui_yend_edit.value
     xoff = gui_xoff_edit.value
+    xoff += 1
+    xoff_perc = (gui_xoff_perc_edit.value / 100) / xoff
+    xoff *= xoff_perc
+    xoff -= 1
     yoff = gui_yoff_edit.value
+    yoff += 1
+    yoff_perc = (gui_yoff_perc_edit.value / 100) / yoff
+    yoff *= yoff_perc
+    yoff -= 1
     width = gui_width_edit.value
     height = gui_height_edit.value
     wm = gui_width_m_edit.value
@@ -211,9 +217,9 @@ def generate_from_gui():
         ystart, yend, iterations, divide,
         xoff, yoff)
 
-    generate_mandelbrot(directory=filename,
+    generate(directory=filename,
                         width=width, height=height, iterations=iterations, divider=divide, xoff=xoff, yoff=yoff,
-                        xstart=xstart, xend=xend, ystart=ystart, yend=yend, perc_lbl=gui2_percentage_lbl)
+                        xstart=xstart, xend=xend, ystart=ystart, yend=yend, perc_lbl=gui_percentage_lbl)
 
 
 
