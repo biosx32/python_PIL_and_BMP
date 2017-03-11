@@ -28,7 +28,7 @@ opt_yoff_perc = 0
 opt_iterations = 10
 
 
-gui_filename_edit = pkg.addLabeledEdit(20, 30, "Name:", opt_filename, 37, 0)
+gui_directory_edit = pkg.addLabeledEdit(20, 30, "Name:", opt_filename, 37, 0)
 gui_width_edit = pkg.addLabeledEdit(20, 70, "Width:",opt_width , 7, 1, int)
 gui_height_edit = pkg.addLabeledEdit(180, 70, "Height:", opt_height, 7, 1, int)
 gui_width_m_edit = pkg.addLabeledEdit(100, 70, "WMulti:",opt_width_m , 7, 1, float)
@@ -43,8 +43,8 @@ gui_yoff_edit = pkg.addLabeledEdit(180, 150, "yoff:", opt_yoff, 7, 1, float)
 gui_divider_perc_edit = pkg.addLabeledEdit(20, 190, "delic%", opt_divider_perc, 7, 1, float)
 gui_xoff_perc_edit = pkg.addLabeledEdit(100  , 190, "xoff%->.:", opt_xoff_perc, 7, 1, float)
 gui_yoff_perc_edit = pkg.addLabeledEdit(180  , 190, "yoff%->.:", opt_yoff_perc, 7, 1, float)
-gui_xoff_perc_b_edit = pkg.addLabeledEdit(100  , 240, "xoff%->O:", opt_xoff_perc_b, 7, 1, float)
-gui_yoff_perc_b_edit = pkg.addLabeledEdit(180  , 240, "yoff%->O:", opt_yoff_perc_b, 7, 1, float)
+gui_xoff_perc_b_edit = pkg.addLabeledEdit(100  , 230, "xoff%->O:", opt_xoff_perc_b, 7, 1, float)
+gui_yoff_perc_b_edit = pkg.addLabeledEdit(180  , 230, "yoff%->O:", opt_yoff_perc_b, 7, 1, float)
 gui_iterations_edit = pkg.addLabeledEdit(260, 150, "iter:", opt_iterations, 7, 1, int)
 gui_generate_button = pkg.addButton(20 , 250, "Generate", lambda: generate_from_gui())
 gui_percentage_lbl = pkg.addLabel(20 , 280, "...")
@@ -57,13 +57,18 @@ def generate_mandelbrot(directory="./", width=opt_width, height=opt_height, iter
                         xstart=opt_xstart, xend=opt_xend,
                         ystart=opt_ystart, yend=opt_yend, xoff=opt_xoff, yoff=opt_yoff,
                         perc_lbl=gui_percentage_lbl,
-                        xoff_perc=opt_xoff_perc, yoff_perc=opt_yoff_perc):
+                        xoff_perc=opt_xoff_perc, yoff_perc=opt_yoff_perc, xoff_perc_b=opt_xoff_perc_b,
+                        yoff_perc_b = opt_xoff_perc_b):
 
     global dircnt, imgcnt
     global pkg
     divider /= 100
-
     xdist = dist(xstart, xend)
+    ydist = dist(ystart, yend)
+
+    xoff = xoff + (xoff_perc_b / 100) * xdist
+    yoff = xoff + (yoff_perc_b / 100) * ydist
+
     xoff_perc = xoff_perc * (xdist / divider) / 100
     xoff += xoff_perc
     xstart = xstart + xoff
@@ -88,6 +93,14 @@ def generate_mandelbrot(directory="./", width=opt_width, height=opt_height, iter
     yend = yend / divider
     xdist = dist(xstart, xend)
     ydist = dist(ystart, yend)
+
+
+    print(dict(directory=directory,
+                        width=width, height=height, iterations=iterations, divider=divider,
+                        xstart=xstart, xend=xend, ystart=ystart, yend=yend, perc_lbl=gui_percentage_lbl,
+                        xoff_perc_b=xoff_perc_b, yoff_perc_b=yoff_perc_b)
+          )
+    #LOOP
 
     for y in range(height):
         yp = (y / height)
@@ -131,7 +144,7 @@ def generate_from_gui():
 
 
     iterations = gui_iterations_edit.value
-    filename = gui_filename_edit.value
+    directory = gui_directory_edit.value
     xstart = gui_xstart_edit.value
     xend = gui_xend_edit.value
     ystart = gui_ystart_edit.value
@@ -155,23 +168,26 @@ def generate_from_gui():
     hm = gui_height_edit_m.value
     width = int(width * wm)
     height = int(height * hm)
+    xoff_perc_b = gui_xoff_perc_b_edit.value
+    yoff_perc_b = gui_yoff_perc_b_edit.value
+    
 
     log("Values of elements")
-    log(filename, width, height, xstart, xend,
+    log(directory, width, height, xstart, xend,
         ystart, yend, iterations, divider,
         xoff, yoff)
 
-    generate_mandelbrot(directory=filename,
+    generate_mandelbrot(directory=directory,
                         width=width, height=height, iterations=iterations, divider=divider,
-                        xstart=xstart, xend=xend, ystart=ystart, yend=yend, perc_lbl=gui_percentage_lbl)
+                        xstart=xstart, xend=xend, ystart=ystart, yend=yend, perc_lbl=gui_percentage_lbl,
+                        xoff_perc_b=xoff_perc_b, yoff_perc_b=yoff_perc_b)
 
 
 
 
 
 
-for i in range(1,10+1):
-    generate_mandelbrot(divider=100*i, xoff_perc=-30, yoff_perc=-30)
+#for i in range(1,10+1): generate_mandelbrot(divider=100*i, xoff_perc=-30, yoff_perc=-30)
 
 
 
