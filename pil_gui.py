@@ -11,8 +11,8 @@ import os
 opt_filename = "E:\\test.bmp"
 opt_width_m = 1
 opt_height_m = 1
-opt_width = 192
-opt_height = 108
+opt_width = 192*3
+opt_height = 108*3
 opt_xstart = -3
 opt_xend = 1
 opt_ystart = -1.125
@@ -58,7 +58,7 @@ def generate_mandelbrot(directory="./", width=opt_width, height=opt_height, iter
                         ystart=opt_ystart, yend=opt_yend, xoff=opt_xoff, yoff=opt_yoff,
                         perc_lbl=gui_percentage_lbl,
                         xoff_perc=opt_xoff_perc, yoff_perc=opt_yoff_perc, xoff_perc_b=opt_xoff_perc_b,
-                        yoff_perc_b = opt_xoff_perc_b):
+                        yoff_perc_b = opt_yoff_perc_b):
 
     global dircnt, imgcnt
     global pkg
@@ -66,17 +66,32 @@ def generate_mandelbrot(directory="./", width=opt_width, height=opt_height, iter
     xdist = dist(xstart, xend)
     ydist = dist(ystart, yend)
 
-    xoff = xoff + (xoff_perc_b / 100) * xdist
-    yoff = xoff + (yoff_perc_b / 100) * ydist
 
-    xoff_perc = xoff_perc * (xdist / divider) / 100
+
+    print( *[ (x+"\t= "+str(y)) for x,y in
+                dict(directory=directory,
+                        width=width, height=height, iterations=iterations, divider=divider,
+                        xstart=xstart, xend=xend, ystart=ystart, yend=yend,
+                        xoff_perc_b=xoff_perc_b, yoff_perc_b=yoff_perc_b).items()
+            ]
+           ,
+           sep='\n'
+          )
+    
+    
+
+
+
+    xoff_perc = xoff_perc * (xdist ) / 100
     xoff += xoff_perc
+
     xstart = xstart + xoff
     xend = xend + xoff
 
-    ydist = dist(ystart, yend)
-    yoff_perc = yoff_perc * (ydist / divider) / 100
+    yoff_perc = yoff_perc * (ydist ) / 100
     yoff += yoff_perc
+
+
     ystart = ystart + yoff
     yend = yend + yoff
 
@@ -95,11 +110,7 @@ def generate_mandelbrot(directory="./", width=opt_width, height=opt_height, iter
     ydist = dist(ystart, yend)
 
 
-    print(dict(directory=directory,
-                        width=width, height=height, iterations=iterations, divider=divider,
-                        xstart=xstart, xend=xend, ystart=ystart, yend=yend, perc_lbl=gui_percentage_lbl,
-                        xoff_perc_b=xoff_perc_b, yoff_perc_b=yoff_perc_b)
-          )
+
     #LOOP
 
     for y in range(height):
@@ -141,6 +152,8 @@ def generate_from_gui():
     divider = gui_divider_edit.value
     divider_perc = (gui_divider_perc_edit.value) * divider / 100
     divider += divider_perc
+    xoff_perc_b = gui_xoff_perc_b_edit.value
+    yoff_perc_b = gui_yoff_perc_b_edit.value
 
 
     iterations = gui_iterations_edit.value
@@ -149,6 +162,8 @@ def generate_from_gui():
     xend = gui_xend_edit.value
     ystart = gui_ystart_edit.value
     yend = gui_yend_edit.value
+
+
 
     xoff = gui_xoff_edit.value
     xdist = dist(xstart, xend)
@@ -168,8 +183,7 @@ def generate_from_gui():
     hm = gui_height_edit_m.value
     width = int(width * wm)
     height = int(height * hm)
-    xoff_perc_b = gui_xoff_perc_b_edit.value
-    yoff_perc_b = gui_yoff_perc_b_edit.value
+
     
 
     log("Values of elements")
@@ -187,7 +201,7 @@ def generate_from_gui():
 
 
 
-#for i in range(1,10+1): generate_mandelbrot(divider=100*i, xoff_perc=-30, yoff_perc=-30)
+for i in range(1,10+1): generate_mandelbrot(divider=25*i, xoff=-1.6)
 
 
 
