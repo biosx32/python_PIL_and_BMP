@@ -1,6 +1,95 @@
 import tkinter
 import os
+from PIL import Image, ImageTk
 logtype = "msg"
+oldpath = ""
+dircnt = 0
+imgcnt = 0
+
+
+
+class imgpack():
+    def __init__(self, x, y, path):
+        self.path = path
+        self.x = x
+        self.y = y
+
+    def makecanvas(self, xsize, ysize):
+        self.img = Image.new('RGB', (xsize, ysize), "black")
+        self.pixels = self.img.load()
+
+    def save(self, path):
+        global oldpath,dircnt, imgcnt
+        if oldpath != path:
+            oldpath = path
+            dircnt = 0
+            imgcnt = 0
+            get_dir_index(path)
+        get_img_index(path)
+        savepath = path +"/img_series_" + str(dircnt) + "/img_" + str(imgcnt) + ".bmp"
+        self.img.save(savepath)
+
+    def load(self, path):
+        try:
+            path = path + "/img_series_" + str(dircnt) + "/img_" + str(imgcnt) + ".bmp"
+            image = Image.open(path)
+            tkpi = ImageTk.PhotoImage(image)
+            imglbl = tkinter.Label(pkg.wnd, image=tkpi)
+            imglbl.image = tkpi
+            imglbl.place(x=self.x, y=self.y)
+        except ValueError:
+            log("File %s not found" %path)
+
+
+
+
+
+
+
+
+
+
+
+def get_img_index(path):
+    global imgcnt
+
+    full_file_paths = get_filepaths("%s./img_series_%d" % (path,dircnt))
+    if not full_file_paths:
+        return
+
+    for f in full_file_paths:
+        if f.endswith(".bmp"):
+            ff = f.split("\\")[-1]
+            if ff.startswith("img_"):
+                num = int(ff.replace("img_", '').replace(".bmp", ''))
+                if num >= imgcnt:
+                    imgcnt = num + 1
+
+def get_dir_index(path):
+    global dircnt
+    dirs = get_directories(path)
+    if not os.path.isdir(path):
+        os.system("mkdir %s" %path)
+
+
+    for f in dirs:
+        if f.startswith(path+"\\img_series_"):
+
+            j = f.replace(path+"\\", "").replace("img_series_", "")
+            j = int(j)
+            if j >= dircnt:
+                 dircnt = j + 1
+
+    series="%s\img_series_%d" % (path,dircnt)
+    startpoint = path+"\\img_series_0"
+    if not os.path.isdir(startpoint):
+        series= startpoint
+        dircnt = 0
+
+    log(series)
+
+    if not os.path.isdir(series):
+        os.system("mkdir %s" % series)
 
 def log(*msg):
     if logtype == "msg":
@@ -76,6 +165,7 @@ class tkWindow:
         return T
 
     def addLabel(self, x, y, text="Label", photo=None):
+        text = str(text)
         T = tkinter.Label(self.wnd, text=text, photo=None )
         T.place(y=y, x=x)
         return T
@@ -111,3 +201,5 @@ def setPixel(p1, p2):
     b = str(hex(b))[2:].zfill(2)
     c="{}{}{}".format(r,g,b)
     img.put("#{}".format(c), (x,y))
+
+pkg = tkWindow()
