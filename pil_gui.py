@@ -20,6 +20,8 @@ opt_yend = 1.125
 opt_divider = 100
 opt_xoff = 0
 opt_yoff = 0
+opt_xoff_perc_b = 0
+opt_yoff_perc_b = 0
 opt_divider_perc = 0
 opt_xoff_perc = 0
 opt_yoff_perc = 0
@@ -39,8 +41,10 @@ gui_divider_edit = pkg.addLabeledEdit(20, 150, "divider:", opt_divider, 7, 1, fl
 gui_xoff_edit = pkg.addLabeledEdit(100, 150, "xoff:", opt_xoff, 7, 1, float)
 gui_yoff_edit = pkg.addLabeledEdit(180, 150, "yoff:", opt_yoff, 7, 1, float)
 gui_divider_perc_edit = pkg.addLabeledEdit(20, 190, "delic%", opt_divider_perc, 7, 1, float)
-gui_xoff_perc_edit = pkg.addLabeledEdit(100  , 190, "xoff%:", opt_xoff_perc, 7, 1, float)
-gui_yoff_perc_edit = pkg.addLabeledEdit(180  , 190, "yoff%:", opt_yoff_perc, 7, 1, float)
+gui_xoff_perc_edit = pkg.addLabeledEdit(100  , 190, "xoff%->.:", opt_xoff_perc, 7, 1, float)
+gui_yoff_perc_edit = pkg.addLabeledEdit(180  , 190, "yoff%->.:", opt_yoff_perc, 7, 1, float)
+gui_xoff_perc_b_edit = pkg.addLabeledEdit(100  , 240, "xoff%->O:", opt_xoff_perc_b, 7, 1, float)
+gui_yoff_perc_b_edit = pkg.addLabeledEdit(180  , 240, "yoff%->O:", opt_yoff_perc_b, 7, 1, float)
 gui_iterations_edit = pkg.addLabeledEdit(260, 150, "iter:", opt_iterations, 7, 1, int)
 gui_generate_button = pkg.addButton(20 , 250, "Generate", lambda: generate_from_gui())
 gui_percentage_lbl = pkg.addLabel(20 , 280, "...")
@@ -60,13 +64,13 @@ def generate_mandelbrot(directory="./", width=opt_width, height=opt_height, iter
     divider /= 100
 
     xdist = dist(xstart, xend)
-    xoff_perc = xoff_perc * (xdist / divider)
+    xoff_perc = xoff_perc * (xdist / divider) / 100
     xoff += xoff_perc
     xstart = xstart + xoff
     xend = xend + xoff
 
     ydist = dist(ystart, yend)
-    yoff_perc = yoff_perc * (ydist / divider)
+    yoff_perc = yoff_perc * (ydist / divider) / 100
     yoff += yoff_perc
     ystart = ystart + yoff
     yend = yend + yoff
@@ -167,7 +171,7 @@ def generate_from_gui():
 
 
 for i in range(1,10+1):
-    generate_mandelbrot(divider=100*i, )
+    generate_mandelbrot(divider=100*i, xoff_perc=-30, yoff_perc=-30)
 
 
 
