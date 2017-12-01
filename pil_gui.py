@@ -8,7 +8,7 @@ import os
 
 
 
-opt_filename = "E:\\test.bmp"
+opt_filename = "C:\\img"
 opt_width_m = 1
 opt_height_m = 1
 opt_width = 192*3
